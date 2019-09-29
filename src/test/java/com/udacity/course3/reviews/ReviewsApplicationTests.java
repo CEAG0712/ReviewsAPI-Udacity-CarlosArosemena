@@ -16,8 +16,7 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -82,7 +81,8 @@ public class ReviewsApplicationTests {
 	@Test
 	public void FindProductById_Not_Found(){
 		Optional<Product> notFound = productRepository.findById(11L);
-		assert(notFound.isEmpty());//https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html
+		assertFalse(notFound.isPresent());
+		//assert(notFound.isEmpty());//https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html
 		//is empty is available!!
 		/*
 		isEmpty
