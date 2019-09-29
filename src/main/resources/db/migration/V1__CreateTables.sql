@@ -1,4 +1,6 @@
-
+drop table if exists comment;
+drop table if exists review;
+drop table if exists product;
 
 create table product
   (

@@ -1,6 +1,7 @@
 package com.udacity.course3.reviews.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ public class Review {
     private String reviewRating;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Product product;
 
     @OneToMany(mappedBy = "review")

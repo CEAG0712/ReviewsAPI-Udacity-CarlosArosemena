@@ -35,7 +35,6 @@ public class Product {
 
      */
     @OneToMany(mappedBy = "product")
-    @JsonIgnore
     private List<Review> reviewList = new ArrayList();
 
     //Constructor w/o the ID & Review List

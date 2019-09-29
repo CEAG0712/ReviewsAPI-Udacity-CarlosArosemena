@@ -1,13 +1,11 @@
 package com.udacity.course3.reviews;
 
-import com.udacity.course3.reviews.exceptions.ItemNotFoundException;
 import com.udacity.course3.reviews.model.Comment;
 import com.udacity.course3.reviews.model.Product;
 import com.udacity.course3.reviews.model.Review;
 import com.udacity.course3.reviews.repository.CommentRepository;
 import com.udacity.course3.reviews.repository.ProductRepository;
 import com.udacity.course3.reviews.repository.ReviewRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,8 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -86,7 +82,17 @@ public class ReviewsApplicationTests {
 	@Test
 	public void FindProductById_Not_Found(){
 		Optional<Product> notFound = productRepository.findById(11L);
-		assert(notFound.isEmpty());
+		assert(notFound.isEmpty());//https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html
+		//is empty is available!!
+		/*
+		isEmpty
+public boolean isEmpty()
+If a value is not present, returns true, otherwise false.
+Returns:
+true if a value is not present, otherwise false
+Since:
+11
+		 */
 
 	}
 
