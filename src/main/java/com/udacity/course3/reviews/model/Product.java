@@ -30,12 +30,16 @@ public class Product {
 
     private String productDescription;
 
+    //Embed MongoDBReviews
+    @Embedded
+    List<ReviewMDBDocument> reviewsMongo = new ArrayList<>();
+
     /*
     A Product in real life can have 1 or more reviews. A review can only belong to one product.
 
      */
-    @OneToMany(mappedBy = "product")
-    private List<Review> reviewList = new ArrayList();
+//    @OneToMany(mappedBy = "product")
+//    private List<Review> reviewList = new ArrayList();
 
     //Constructor w/o the ID & Review List
 

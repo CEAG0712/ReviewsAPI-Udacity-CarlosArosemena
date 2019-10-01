@@ -3,9 +3,9 @@ package com.udacity.course3.reviews.controller;
 import com.udacity.course3.reviews.exceptions.ItemNotFoundException;
 import com.udacity.course3.reviews.model.Product;
 import com.udacity.course3.reviews.model.Review;
-import com.udacity.course3.reviews.repository.ProductRepository;
-import com.udacity.course3.reviews.repository.ReviewRepository;
-import com.udacity.course3.reviews.repository.ValidationService;
+import com.udacity.course3.reviews.model.ReviewMDBDocument;
+import com.udacity.course3.reviews.repository.*;
+import com.udacity.course3.reviews.service.MongoDBSaveService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Spring REST controller for working with review entity.
@@ -27,11 +28,17 @@ public class ReviewsController {
     private ProductRepository productRepository;
     private ReviewRepository reviewRepository;
     private ValidationService validationService;
+    private ReviewMongoRepo reviewMongoRepo;
+    private MongoDBSaveService mongoDBSaveService;
+    private CommentMongoRepo commentMongoRepo;
 
-    public ReviewsController(ProductRepository productRepository, ReviewRepository reviewRepository, ValidationService validationService) {
+    public ReviewsController(ProductRepository productRepository, ReviewRepository reviewRepository, ValidationService validationService, ReviewMongoRepo reviewMongoRepo, MongoDBSaveService mongoDBSaveService, CommentMongoRepo commentMongoRepo) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.validationService = validationService;
+        this.reviewMongoRepo = reviewMongoRepo;
+        this.mongoDBSaveService = mongoDBSaveService;
+        this.commentMongoRepo = commentMongoRepo;
     }
 
     /**
@@ -47,19 +54,17 @@ public class ReviewsController {
      */
     @PostMapping("/products/{productId}")
     public ResponseEntity createReviewForProduct(@PathVariable("productId") Long productId,
-                                                 @Valid @RequestBody Review review, BindingResult result) {
+                                                 @Valid @RequestBody ReviewMDBDocument review, BindingResult result) {
 
-        //Set up an enum on the DB. I was really curious about trying that constraint. it works
-        //review_rating ENUM('GREAT', 'GOOD', 'AVERAGE', 'POOR', 'UNACCEPTABLE'),
-        //Only takes those values, if else, throws an exception from the DB
+
         ResponseEntity errorMap = validationService.validationService(result);
         if(errorMap!=null) return errorMap;
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new ItemNotFoundException("Product not found"));
-        review.setProduct(product);
+        review.setRelatedProductId(product.getId());
 
-        return ResponseEntity.ok(reviewRepository.save(review));
+        return ResponseEntity.ok(mongoDBSaveService.saveMongoReview(review));
     }
 
     /**
@@ -69,9 +74,18 @@ public class ReviewsController {
      * @return The list of reviews.
      */
     @GetMapping("/products/{productId}")
-    public ResponseEntity<List> listReviewsForProduct(@PathVariable("productId") Long productId) {
+    public ResponseEntity listReviewsForProduct(@PathVariable("productId") Long productId) {
         productRepository.findById(productId)
                 .orElseThrow(()-> new ItemNotFoundException("Product not found, No review list to be displayed"));
-        return ResponseEntity.ok().body(reviewRepository.findAllByProductId(productId));
+        return ResponseEntity.ok().body(
+                reviewMongoRepo.findAllByRelatedProductId(productId).stream().map(
+                        reviewMDBDocument ->
+                        {
+                            reviewMDBDocument.setCommentList(commentMongoRepo.findAllByRelatedReviewId(reviewMDBDocument.getId()));
+                            return reviewMDBDocument;
+                        }
+                ).collect(Collectors.toList())
+
+        );
     }
 }

@@ -18,8 +18,8 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
+//@RunWith(SpringRunner.class)
+//@DataJpaTest
 public class ReviewsApplicationTests {
 
 	@Autowired
@@ -82,17 +82,6 @@ public class ReviewsApplicationTests {
 	public void FindProductById_Not_Found(){
 		Optional<Product> notFound = productRepository.findById(11L);
 		assertFalse(notFound.isPresent());
-		//assert(notFound.isEmpty());//https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html
-		//is empty is available!!
-		/*
-		isEmpty
-public boolean isEmpty()
-If a value is not present, returns true, otherwise false.
-Returns:
-true if a value is not present, otherwise false
-Since:
-11
-		 */
 
 	}
 
