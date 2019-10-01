@@ -18,8 +18,8 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-//@RunWith(SpringRunner.class)
-//@DataJpaTest
+@RunWith(SpringRunner.class)
+@DataJpaTest
 public class ReviewsApplicationTests {
 
 	@Autowired
